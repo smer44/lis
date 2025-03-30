@@ -12,6 +12,7 @@ public class MaxBehaviourScript : MonoBehaviour
     Transform cameraPivotTransform;
     Transform visualsTransform;
     Rigidbody rigidbody;
+    public BoxCollider floorCollider;
     public float mouseSensitivity = 360f;
     public float jumpForce = 10f;
     float rx;
@@ -156,6 +157,33 @@ public class MaxBehaviourScript : MonoBehaviour
         ry += Input.GetAxis("Mouse Y")* mouseSensitivity *  Time.deltaTime;     
         ry = MinMax(ry, -80f,80f);
         cameraPivotTransform.localRotation = Quaternion.Euler(-ry,rx,0);       
+
+    }
+
+    void OnTriggerStay (Collider other){
+        Rigidbody otherBody = other.GetComponent<Rigidbody>();
+
+        //Debug.Log("otherBody:" + otherBody);
+        if (otherBody != null) {
+            CorrectFloor(otherBody);
+        }        
+    }
+
+    void OnTriggerEnter (Collider other){
+        Rigidbody otherBody = other.GetComponent<Rigidbody>();
+
+        //Debug.Log("otherBody:" + otherBody);
+        if (otherBody != null) {
+            CorrectFloor(otherBody);
+        }        
+    }    
+
+    void CorrectFloor(Rigidbody floorBody ){
+        float otherVy = floorBody.linearVelocity.y;
+        float myVy = rigidbody.linearVelocity.y;
+        if (otherVy >= myVy){
+            rigidbody.linearVelocity = floorBody.linearVelocity;
+        }
 
     }
 
