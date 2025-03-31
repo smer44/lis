@@ -5,14 +5,16 @@ public class MaxBehaviourScript : MonoBehaviour
 {
     bool running;
     bool casting;
-    bool grounded;
+    public bool grounded;
+    bool jumpingTillFixedUpdate;
     Vector2 xzMovement; 
     Animator animator;
     public float speed;
     Transform cameraPivotTransform;
     Transform visualsTransform;
+    Vector3 moveRelCamera;
     Rigidbody rigidbody;
-    Rigidbody? floorBody ;
+    Rigidbody? floorBody;
     public BoxCollider floorCollider;
     public float mouseSensitivity = 360f;
     public float jumpForce = 10f;
@@ -26,6 +28,7 @@ public class MaxBehaviourScript : MonoBehaviour
         casting = false;
         grounded = false;
         xzMovement = new Vector2(0f, 0f);
+        moveRelCamera = Vector3.zero;
 
         visualsTransform = transform. Find("MaxVisuals");
         cameraPivotTransform = transform. Find("CameraPivot");
@@ -44,16 +47,34 @@ public class MaxBehaviourScript : MonoBehaviour
         UpdateCameraRotation();
         UpdateMovementRelativeToCamera();
         UpdateCasting();
-        UpdateJump();
+        UpdateJumpInput();
         
     }
 
     void FixedUpdate(){
         //CorrectFloor();
-        grounded = false;
+        //grounded = false;
+        DetectGround();
+        FixedUpdateMovement();
+        FixedUpdateJump();
+
     }
 
-    void UpdateMovement(){
+    void DetectGround(){
+        Vector3 halfExtents = new Vector3(0.4f,0.01f,0.4f);
+        //Vector3 smallExtents = new Vector3(0.1f,0.1f,0.1f);
+        Vector3 castBegin =  transform.position;// - Vector3.up* 0.01f;
+        float maxDistance = 0.01f;
+        grounded = Physics.BoxCast(castBegin,halfExtents, -Vector3.up,out RaycastHit hitInfo,Quaternion.identity, maxDistance);
+        //Debug.DrawLine(transform.position,transform.position+smallExtents);
+        if (grounded){
+            Debug.Log("DetectGround with " + hitInfo.transform.gameObject); 
+        }
+        
+
+    }
+
+    void UpdateMovementInput(){
         float dx = 0f;
         float dz = 0f;
         if(Input.GetKey(KeyCode.W)){
@@ -78,16 +99,18 @@ public class MaxBehaviourScript : MonoBehaviour
 
         }
     }
+
+
     void OnCollisionEnter(Collision col){
         grounded = true;
         floorBody = col.gameObject.GetComponent<Rigidbody>();
-        Debug.Log("OnCollisionEnter with " + floorBody); 
+        //Debug.Log("OnCollisionEnter with " + floorBody); 
     }
     //OnCollisionStay
     void OnCollisionStay(Collision col){
         grounded = true;
         floorBody = col.gameObject.GetComponent<Rigidbody>();
-        Debug.Log("OnCollisionStay with " + floorBody); 
+        //Debug.Log("OnCollisionStay with " + floorBody); 
     }
 
 
@@ -96,14 +119,22 @@ public class MaxBehaviourScript : MonoBehaviour
         floorBody = null;//other.GetComponent<Rigidbody>();
     }
 
-
-    void UpdateJump(){
-
-        if (grounded && Input.GetKeyDown("space")){            
-            //rigidbody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse); 
+    void FixedUpdateJump(){
+        if (jumpingTillFixedUpdate){
+            jumpingTillFixedUpdate = false;
             rigidbody.linearVelocity += new Vector3(0, jumpForce, 0);
-            grounded = false;    
-            Debug.Log("Jumped ");       
+            Debug.Log("FixedUpdateJump "); 
+        }
+    }
+
+    void UpdateJumpInput(){
+
+        if (grounded && Input.GetKeyDown("space")){          
+            jumpingTillFixedUpdate= true;  
+            //rigidbody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse); 
+            //rigidbody.linearVelocity += new Vector3(0, jumpForce, 0);
+            //grounded = false;    
+                  
         }
 
     }
@@ -142,7 +173,7 @@ public class MaxBehaviourScript : MonoBehaviour
         Vector3 dzRelCamera = dz * forward.normalized;
         Vector3 dxRelCamera = dx * right.normalized;
 
-        Vector3 moveRelCamera = dzRelCamera + dxRelCamera;
+        moveRelCamera = dzRelCamera + dxRelCamera;
         
 
         bool newRunning = moveRelCamera.magnitude > 0.001f;
@@ -151,24 +182,41 @@ public class MaxBehaviourScript : MonoBehaviour
             animator.SetBool("running",running);
         }        
 
-        // set linearVelocity to be as for plattform, if it exist:
-        if (floorBody != null){
-            rigidbody.linearVelocity = floorBody.linearVelocity;
-            //Debug.Log("floorBody.linearVelocity set ");
-        }
-        else{
-           rigidbody.linearVelocity = new Vector3(0f,rigidbody.linearVelocity.y, 0f); 
-        }
-        
-
-        if (newRunning){
-            //transform.position +=moveRelCamera * speed * Time.deltaTime;
-            Vector3 velocity = moveRelCamera * speed;// * Time.deltaTime;
-            velocity.y = 0f; //rigidbody.linearVelocity.y;
-            rigidbody.linearVelocity += velocity;
+        //update character orientation:
+        if (grounded && running){
             Vector3 newForward =  moveRelCamera;
             newForward.y = 0;
             visualsTransform.rotation  = Quaternion.LookRotation(newForward);
+        }
+
+    }
+
+
+    void FixedUpdateMovement(){
+
+        // set linearVelocity to be as for plattform, if it exist:
+        if (grounded){
+            if (floorBody != null){
+                rigidbody.linearVelocity = floorBody.linearVelocity;
+            }
+            else{
+                rigidbody.linearVelocity = new Vector3(0f,rigidbody.linearVelocity.y, 0f); 
+            }
+            
+            //Debug.Log("floorBody.linearVelocity set ");
+        }
+        else{
+           //change nothing if character is flying.
+        }
+        
+
+        if (grounded && running){
+            //transform.position +=moveRelCamera * speed * Time.deltaTime;
+            Vector3 velocity = moveRelCamera * speed;// * Time.deltaTime;
+            velocity.y = 0f; //rigidbody.linearVelocity.y;// not nessesary ?? 
+            rigidbody.linearVelocity += velocity;          
+           
+            
         }
 
 

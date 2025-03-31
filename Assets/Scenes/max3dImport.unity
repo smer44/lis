@@ -179,7 +179,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -554,7 +554,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 87fc3b11179911642b9416358df97f68, type: 2}
+  - {fileID: 2100000, guid: e834b1a59d0819e4eb8c8171ddd376b3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -671,9 +671,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.4
-  m_Height: 4.49
+  m_Height: 4.2816668
   m_Direction: 1
-  m_Center: {x: 0, y: 2.16, z: 0.14}
+  m_Center: {x: 0, y: 2.123406, z: 0.14000002}
 --- !u!54 &1590872280
 Rigidbody:
   m_ObjectHideFlags: 0
