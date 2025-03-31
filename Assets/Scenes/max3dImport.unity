@@ -192,7 +192,7 @@ Light:
     m_Strength: 1
     m_Bias: 0.05
     m_NormalBias: 0.4
-    m_NearPlane: 0.2
+    m_NearPlane: 0.31
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -630,6 +630,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45fd5abb2454b3e469b0d753fc4cf558, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grounded: 0
   speed: 10
   floorCollider: {fileID: 0}
   mouseSensitivity: 360
