@@ -12,6 +12,7 @@ public class MaxBehaviourScript : MonoBehaviour
     Transform cameraPivotTransform;
     Transform visualsTransform;
     Rigidbody rigidbody;
+    Rigidbody? floorBody ;
     public BoxCollider floorCollider;
     public float mouseSensitivity = 360f;
     public float jumpForce = 10f;
@@ -47,6 +48,10 @@ public class MaxBehaviourScript : MonoBehaviour
         
     }
 
+    void FixedUpdate(){
+        CorrectFloor();
+    }
+
     void UpdateMovement(){
         float dx = 0f;
         float dz = 0f;
@@ -74,7 +79,12 @@ public class MaxBehaviourScript : MonoBehaviour
     }
     void OnCollisionEnter(Collision col){
         grounded = true;
+        floorBody = col.gameObject.GetComponent<Rigidbody>();
+    }
 
+    void OnCollisionExit(Collision col){
+        //grounded = false;
+        floorBody = null;//other.GetComponent<Rigidbody>();
     }
 
 
@@ -161,31 +171,33 @@ public class MaxBehaviourScript : MonoBehaviour
     }
 
     void OnTriggerStay (Collider other){
-        Rigidbody otherBody = other.GetComponent<Rigidbody>();
-
-        //Debug.Log("otherBody:" + otherBody);
-        if (otherBody != null) {
-            CorrectFloor(otherBody);
-        }        
+        floorBody = other.GetComponent<Rigidbody>();
+        //grounded = true;
+      
     }
 
     void OnTriggerEnter (Collider other){
-        Rigidbody otherBody = other.GetComponent<Rigidbody>();
-
-        //Debug.Log("otherBody:" + otherBody);
-        if (otherBody != null) {
-            CorrectFloor(otherBody);
-        }        
+        floorBody = other.GetComponent<Rigidbody>();
+        //grounded = true;    
     }    
 
-    void CorrectFloor(Rigidbody floorBody ){
-        float otherVy = floorBody.linearVelocity.y;
-        float myVy = rigidbody.linearVelocity.y;
-        if (otherVy >= myVy){
-            rigidbody.linearVelocity = floorBody.linearVelocity;
-        }
+    void OnTriggerExit (Collider other){
+        floorBody = null;//other.GetComponent<Rigidbody>();
+        //grounded = false;    
+    }  
 
-    }
+
+    void CorrectFloor(){
+        if (floorBody != null){        
+            Vector3 myVel = rigidbody.linearVelocity;
+            float otherVy = floorBody.linearVelocity.y;
+            float myVy = rigidbody.linearVelocity.y;
+            if (otherVy >= myVy){
+                myVel.y = otherVy;
+                rigidbody.linearVelocity = myVel;
+            }
+        }
+     }
 
 
 }
