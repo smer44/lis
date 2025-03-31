@@ -8,7 +8,8 @@ public class TimeReversableObject : MonoBehaviour
     private int maxMemory = 500;
     public bool isRewinding;
     public float startingWait;
-    public Vector3 velocity;
+    Vector3 velocity;
+    public Vector3 startingVelocity;
     public Rigidbody body;
     public TimeRecord noSpeed;
     //SpriteRenderer renderer;
@@ -19,6 +20,7 @@ public class TimeReversableObject : MonoBehaviour
         memory =new Stack<TimeRecord> ();
         isRewinding = false;
         body = GetComponent<Rigidbody>();
+        body.linearVelocity = startingVelocity;
         noSpeed = new TimeRecord(this);
         noSpeed.toZeroSpeed();
         //renderer = GetComponent<SpriteRenderer>();
