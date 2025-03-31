@@ -5,6 +5,7 @@ public class MaxBehaviourScript : MonoBehaviour
 {
     bool running;
     bool casting;
+    bool castStart;
     public bool grounded;
     bool jumpingTillFixedUpdate;
     Vector2 xzMovement; 
@@ -54,13 +55,14 @@ public class MaxBehaviourScript : MonoBehaviour
     void FixedUpdate(){
         //CorrectFloor();
         //grounded = false;
-        DetectGround();
+        FixedUpdateDetectGround();
+        FixedUpdateRewindStartSpeedErasure();
         FixedUpdateMovement();
         FixedUpdateJump();
 
     }
 
-    void DetectGround(){
+    void FixedUpdateDetectGround(){
         Vector3 halfExtents = new Vector3(0.4f,0.01f,0.4f);
         //Vector3 smallExtents = new Vector3(0.1f,0.1f,0.1f);
         Vector3 castBegin =  transform.position;// - Vector3.up* 0.01f;
@@ -68,7 +70,7 @@ public class MaxBehaviourScript : MonoBehaviour
         grounded = Physics.BoxCast(castBegin,halfExtents, -Vector3.up,out RaycastHit hitInfo,Quaternion.identity, maxDistance);
         //Debug.DrawLine(transform.position,transform.position+smallExtents);
         if (grounded){
-            Debug.Log("DetectGround with " + hitInfo.transform.gameObject); 
+            //Debug.Log("DetectGround with " + hitInfo.transform.gameObject); 
         }
         
 
@@ -123,7 +125,7 @@ public class MaxBehaviourScript : MonoBehaviour
         if (jumpingTillFixedUpdate){
             jumpingTillFixedUpdate = false;
             rigidbody.linearVelocity += new Vector3(0, jumpForce, 0);
-            Debug.Log("FixedUpdateJump "); 
+            //Debug.Log("FixedUpdateJump "); 
         }
     }
 
@@ -143,6 +145,7 @@ public class MaxBehaviourScript : MonoBehaviour
     void UpdateCasting(){
         if(Input.GetMouseButtonDown(1)){
             casting = true;
+            castStart = true;
             animator.SetLayerWeight(1,1f);
             animator.SetBool("casting",true);
         }
@@ -191,6 +194,14 @@ public class MaxBehaviourScript : MonoBehaviour
 
     }
 
+    void FixedUpdateRewindStartSpeedErasure(){
+        if (castStart &&  ! grounded){
+            rigidbody.linearVelocity = Vector3.zero;
+            castStart = false;
+        }
+
+    }
+
 
     void FixedUpdateMovement(){
 
@@ -210,11 +221,17 @@ public class MaxBehaviourScript : MonoBehaviour
         }
         
 
-        if (grounded && running){
-            //transform.position +=moveRelCamera * speed * Time.deltaTime;
-            Vector3 velocity = moveRelCamera * speed;// * Time.deltaTime;
-            velocity.y = 0f; //rigidbody.linearVelocity.y;// not nessesary ?? 
-            rigidbody.linearVelocity += velocity;          
+        if ( running){
+                Vector3 velocity = moveRelCamera * speed;// * Time.deltaTime;
+                velocity.y = 0f; //rigidbody.linearVelocity.y;// not nessesary ?? 
+
+            if (grounded){
+                rigidbody.linearVelocity += velocity;  
+            }   
+            else{
+                rigidbody.linearVelocity += velocity * Time.deltaTime;;  
+
+            }     
            
             
         }
