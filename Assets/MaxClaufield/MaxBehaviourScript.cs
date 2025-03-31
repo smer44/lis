@@ -49,7 +49,7 @@ public class MaxBehaviourScript : MonoBehaviour
     }
 
     void FixedUpdate(){
-        CorrectFloor();
+        //CorrectFloor();
     }
 
     void UpdateMovement(){
@@ -141,11 +141,20 @@ public class MaxBehaviourScript : MonoBehaviour
             animator.SetBool("running",running);
         }        
 
+        // set linearVelocity to be as for plattform, if it exist:
+        if (floorBody != null){
+            rigidbody.linearVelocity = floorBody.linearVelocity;
+        }
+        else{
+           rigidbody.linearVelocity = new Vector3(0f,rigidbody.linearVelocity.y, 0f); 
+        }
+        
+
         if (newRunning){
             //transform.position +=moveRelCamera * speed * Time.deltaTime;
             Vector3 velocity = moveRelCamera * speed;// * Time.deltaTime;
-            velocity.y = rigidbody.linearVelocity.y;
-            rigidbody.linearVelocity = velocity;
+            velocity.y = 0f; //rigidbody.linearVelocity.y;
+            rigidbody.linearVelocity += velocity;
             Vector3 newForward =  moveRelCamera;
             newForward.y = 0;
             visualsTransform.rotation  = Quaternion.LookRotation(newForward);
