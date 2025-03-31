@@ -24,7 +24,7 @@ public class MaxBehaviourScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         running = false;
         casting = false;
-        grounded = true;
+        grounded = false;
         xzMovement = new Vector2(0f, 0f);
 
         visualsTransform = transform. Find("MaxVisuals");
@@ -39,7 +39,7 @@ public class MaxBehaviourScript : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
         //UpdateMovement();
         UpdateCameraRotation();
         UpdateMovementRelativeToCamera();
@@ -50,6 +50,7 @@ public class MaxBehaviourScript : MonoBehaviour
 
     void FixedUpdate(){
         //CorrectFloor();
+        grounded = false;
     }
 
     void UpdateMovement(){
@@ -80,7 +81,15 @@ public class MaxBehaviourScript : MonoBehaviour
     void OnCollisionEnter(Collision col){
         grounded = true;
         floorBody = col.gameObject.GetComponent<Rigidbody>();
+        Debug.Log("OnCollisionEnter with " + floorBody); 
     }
+    //OnCollisionStay
+    void OnCollisionStay(Collision col){
+        grounded = true;
+        floorBody = col.gameObject.GetComponent<Rigidbody>();
+        Debug.Log("OnCollisionStay with " + floorBody); 
+    }
+
 
     void OnCollisionExit(Collision col){
         //grounded = false;
@@ -93,7 +102,8 @@ public class MaxBehaviourScript : MonoBehaviour
         if (grounded && Input.GetKeyDown("space")){            
             //rigidbody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse); 
             rigidbody.linearVelocity += new Vector3(0, jumpForce, 0);
-            grounded = false;           
+            grounded = false;    
+            Debug.Log("Jumped ");       
         }
 
     }
@@ -144,6 +154,7 @@ public class MaxBehaviourScript : MonoBehaviour
         // set linearVelocity to be as for plattform, if it exist:
         if (floorBody != null){
             rigidbody.linearVelocity = floorBody.linearVelocity;
+            //Debug.Log("floorBody.linearVelocity set ");
         }
         else{
            rigidbody.linearVelocity = new Vector3(0f,rigidbody.linearVelocity.y, 0f); 
