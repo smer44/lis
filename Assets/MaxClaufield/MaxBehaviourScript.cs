@@ -7,6 +7,7 @@ public class MaxBehaviourScript : MonoBehaviour
     bool casting;
     bool castStart;
     public bool grounded;
+    public float groundedLookDepth;
     bool jumpingTillFixedUpdate;
     Vector2 xzMovement; 
     Animator animator;
@@ -66,8 +67,8 @@ public class MaxBehaviourScript : MonoBehaviour
         Vector3 halfExtents = new Vector3(0.4f,0.01f,0.4f);
         //Vector3 smallExtents = new Vector3(0.1f,0.1f,0.1f);
         Vector3 castBegin =  transform.position;// - Vector3.up* 0.01f;
-        float maxDistance = 0.01f;
-        grounded = Physics.BoxCast(castBegin,halfExtents, -Vector3.up,out RaycastHit hitInfo,Quaternion.identity, maxDistance);
+        //float maxDistance = 0.01f;
+        grounded = Physics.BoxCast(castBegin,halfExtents, -Vector3.up,out RaycastHit hitInfo,Quaternion.identity, groundedLookDepth);
         //Debug.DrawLine(transform.position,transform.position+smallExtents);
         if (grounded){
             //Debug.Log("DetectGround with " + hitInfo.transform.gameObject); 
@@ -104,13 +105,13 @@ public class MaxBehaviourScript : MonoBehaviour
 
 
     void OnCollisionEnter(Collision col){
-        grounded = true;
+        //grounded = true;
         floorBody = col.gameObject.GetComponent<Rigidbody>();
         //Debug.Log("OnCollisionEnter with " + floorBody); 
     }
     //OnCollisionStay
     void OnCollisionStay(Collision col){
-        grounded = true;
+        //grounded = true;
         floorBody = col.gameObject.GetComponent<Rigidbody>();
         //Debug.Log("OnCollisionStay with " + floorBody); 
     }
@@ -227,6 +228,8 @@ public class MaxBehaviourScript : MonoBehaviour
 
             if (grounded){
                 rigidbody.linearVelocity += velocity;  
+                Debug.Log("Adding velocity on ground");
+
             }   
             else{
                 rigidbody.linearVelocity += velocity * Time.deltaTime;;  
