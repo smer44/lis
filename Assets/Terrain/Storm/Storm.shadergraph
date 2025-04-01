@@ -657,7 +657,7 @@
     "m_Precision": 0,
     "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
-    "m_PreviewMode": 0,
+    "m_PreviewMode": 2,
     "m_CustomColors": {
         "m_SerializableColors": []
     }
@@ -1732,7 +1732,7 @@
     "m_Precision": 0,
     "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
-    "m_PreviewMode": 0,
+    "m_PreviewMode": 2,
     "m_CustomColors": {
         "m_SerializableColors": []
     }
@@ -1797,7 +1797,7 @@
     "m_Precision": 0,
     "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
-    "m_PreviewMode": 0,
+    "m_PreviewMode": 2,
     "m_CustomColors": {
         "m_SerializableColors": []
     },
@@ -2033,9 +2033,9 @@
         "m_Position": {
             "serializedVersion": "2",
             "x": -2369.60009765625,
-            "y": 728.0,
+            "y": 728.0000610351563,
             "width": 208.0,
-            "height": 312.800048828125
+            "height": 312.80010986328127
         }
     },
     "m_Slots": [
